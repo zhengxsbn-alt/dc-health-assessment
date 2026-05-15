@@ -509,9 +509,9 @@ function uIt(id,f,v){if(!D.items[id])D.items[id]={};D.items[id][f]=v;asv();if(f=
 function fRisk(id,ck,i){
   var its=gci(ck),it=its[i];
   if(!D.items[id])D.items[id]={};
-  // Use ref_data suggestion if available, otherwise use assessment risk
-  var ref=findRef(ck,it);
-  D.items[id].risk=(ref&&ref.risk)?ref.risk:(it.risk||'');
+  // 优先取评估表原始风险描述，再取参考清单风险
+  D.items[id].risk=it.risk||'';
+  if(!D.items[id].risk){var ref=findRef(ck,it);if(ref&&ref.risk)D.items[id].risk=ref.risk}
   asv();expC.add(id);renderItems();
 }
 
