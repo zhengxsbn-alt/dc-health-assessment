@@ -300,36 +300,39 @@ function renderOv(){
 // Info form
 function renderInfo(){
   var fs=[
-    {k:'dc_name',l:'机房名称',t:'text',p:'请输入机房名称'},
-    {k:'dc_loc',l:'机房地址',t:'text',p:'请输入机房地址'},
-    {k:'dc_area',l:'机房面积(㎡)',t:'number',p:'请输入机房面积'},
-    {k:'dc_tier',l:'机房等级',t:'select',os:['','Tier I','Tier II','Tier III','Tier IV','国标A','国标B','国标C']},
-    {k:'dc_itpw',l:'IT总功率(kW)',t:'number',p:'请输入IT总功率'},
-    {k:'dc_rack',l:'机柜数量',t:'number',p:'请输入机柜数量'},
-    {k:'dc_pue',l:'当前PUE',t:'number',p:'请输入当前PUE'},
-    {k:'dc_age',l:'投运年限',t:'number',p:'请输入投运年限'},
-    {k:'dc_ct',l:'联系人',t:'text',p:'请输入联系人'},
-    {k:'dc_ph',l:'联系电话',t:'tel',p:'请输入联系电话'},
-    {k:'dc_as',l:'评估人',t:'text',p:'请输入评估人'},
-    {k:'dc_dt',l:'评估日期',t:'date',p:''},
-    {k:'dc_nt',l:'备注',t:'textarea',p:'请输入备注信息'}
+    {k:'dc_name',l:'数据中心名称',t:'text',p:'请输入数据中心名称'},
+    {k:'dc_mod',l:'模组名称',t:'text',p:'请输入模组名称'},
+    {k:'dc_op',l:'运营商',t:'text',p:'请输入运营商'},
+    {k:'dc_team',l:'运维团队',t:'text',p:'请输入运维团队'},
+    {k:'dc_pre',l:'是否提前提供资料',t:'radio',os:['是，资料齐全','是，部分提供','否']},
+    {k:'dc_epw',l:'外市电容量',t:'text',p:'请输入外市电容量'},
+    {k:'dc_sarch',l:'供电架构',t:'text',p:'请输入供电架构'},
+    {k:'dc_dload',l:'设计负荷',t:'text',p:'请输入设计负荷'},
+    {k:'dc_cload',l:'当前负荷',t:'text',p:'请输入当前负荷'},
+    {k:'dc_coolarch',l:'制冷架构',t:'text',p:'请输入制冷架构'},
+    {k:'dc_coolcap',l:'系统制冷量',t:'text',p:'请输入系统制冷量'},
+    {k:'dc_evp',l:'配电专业评估人员',t:'text',p:'请输入配电专业评估人员'},
+    {k:'dc_evdt',l:'配电评估日期',t:'date',p:''},
+    {k:'dc_hvp',l:'暖通专业评估人员',t:'text',p:'请输入暖通专业评估人员'},
+    {k:'dc_hvdt',l:'暖通评估日期',t:'date',p:''}
   ];
-  var h='<h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--g800)">📋 机房基本信息</h2>';
+  var h='<h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--g800)">📋 机房健康度评估基础信息</h2>';
   fs.forEach(function(f){
     var v=D.info[f.k]||'';
-    if(f.t==='textarea'){
-      h+='<div class="inf-f"><label>'+f.l+'</label><textarea placeholder="'+f.p+'" oninput="uInfo(\''+f.k+'\',this.value)">'+eH(v)+'</textarea></div>';
-    }else if(f.t==='select'){
-      h+='<div class="inf-f"><label>'+f.l+'</label><select onchange="uInfo(\''+f.k+'\',this.value)">';
-      f.os.forEach(function(o){h+='<option value="'+o+'"'+(v===o?' selected':'')+'>'+(o||'请选择')+'</option>'});
-      h+='</select></div>';
+    if(f.t==='radio'){
+      h+='<div class="fg"><div class="fl2">'+f.l+'</div>';
+      h+='<div class="ipg">';
+      f.os.forEach(function(o){
+        h+='<label class="ipl'+(v===o?' sel':'')+'" onclick="uInfo(\''+f.k+'\',\''+eO(o)+'\')"><input type="radio" name="ri_'+f.k+'" value="'+eA(o)+'"'+(v===o?' checked':'')+'>'+eH(o)+'</label>';
+      });
+      h+='</div></div>';
     }else{
       h+='<div class="inf-f"><label>'+f.l+'</label><input type="'+f.t+'" placeholder="'+f.p+'" value="'+eA(v)+'" oninput="uInfo(\''+f.k+'\',this.value)"></div>';
     }
   });
   document.getElementById('infoF').innerHTML=h;
 }
-function uInfo(k,v){D.info[k]=v;asv()}
+function uInfo(k,v){D.info[k]=v;asv();if(k==='dc_pre')renderInfo()}
 
 // Category page
 function renderCat(ck){
@@ -563,10 +566,12 @@ function exportXlsx(){
   // Sheet 1: 机房信息
   var ws0=wb.addWorksheet('机房信息');
   var infoFields=[
-    {k:'dc_name',l:'机房名称'},{k:'dc_loc',l:'机房地址'},{k:'dc_area',l:'机房面积(㎡)'},
-    {k:'dc_tier',l:'机房等级'},{k:'dc_itpw',l:'IT总功率(kW)'},{k:'dc_rack',l:'机柜数量'},
-    {k:'dc_pue',l:'当前PUE'},{k:'dc_age',l:'投运年限'},{k:'dc_ct',l:'联系人'},
-    {k:'dc_ph',l:'联系电话'},{k:'dc_as',l:'评估人'},{k:'dc_dt',l:'评估日期'},{k:'dc_nt',l:'备注'}
+    {k:'dc_name',l:'数据中心名称'},{k:'dc_mod',l:'模组名称'},{k:'dc_op',l:'运营商'},
+    {k:'dc_team',l:'运维团队'},{k:'dc_pre',l:'是否提前提供资料'},{k:'dc_epw',l:'外市电容量'},
+    {k:'dc_sarch',l:'供电架构'},{k:'dc_dload',l:'设计负荷'},{k:'dc_cload',l:'当前负荷'},
+    {k:'dc_coolarch',l:'制冷架构'},{k:'dc_coolcap',l:'系统制冷量'},
+    {k:'dc_evp',l:'配电专业评估人员'},{k:'dc_evdt',l:'配电评估日期'},
+    {k:'dc_hvp',l:'暖通专业评估人员'},{k:'dc_hvdt',l:'暖通评估日期'}
   ];
   ws0.columns=[{header:'项目',width:18},{header:'内容',width:40}];
   ws0.getRow(1).font={bold:true,size:11};
