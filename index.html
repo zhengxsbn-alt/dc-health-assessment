@@ -342,15 +342,15 @@ function renderCat(ck){
   document.getElementById('catT').textContent=c.ic+' '+c.n;
   document.getElementById('catC').textContent=its.length+'项';
 
-  var d2s=new Set(),d2d3={};
+  var d2s=[],d2d3={};
   its.forEach(function(it){
-    d2s.add(it.dim2);
+    if(d2s.indexOf(it.dim2)<0)d2s.push(it.dim2);
     var d3=it.dim3.trim().replace(/\n/g,'');
-    if(!d2d3[it.dim2])d2d3[it.dim2]=new Set();
-    d2d3[it.dim2].add(d3);
+    if(!d2d3[it.dim2])d2d3[it.dim2]=[];
+    if(d2d3[it.dim2].indexOf(d3)<0)d2d3[it.dim2].push(d3);
   });
 
-  var h2='';[...d2s].sort().forEach(function(d){h2+='<span class="fch'+(d2f.has(d)?' on':'')+'" onclick="tgD2(this,\''+eO(d)+'\')">'+eH(d)+'</span>'});
+  var h2='';d2s.forEach(function(d){h2+='<span class="fch'+(d2f.has(d)?' on':'')+'" onclick="tgD2(this,\''+eO(d)+'\')">'+eH(d)+'</span>'});
   document.getElementById('d2c').innerHTML=h2;
 
   var h3='',hasD2=d2f.size>0;
@@ -358,7 +358,7 @@ function renderCat(ck){
     d2f.forEach(function(d2){
       var d3s=d2d3[d2];
       if(!d3s)return;
-      [...d3s].sort().forEach(function(d3){
+      d3s.forEach(function(d3){
         h3+='<span class="fch'+(d3f.has(d3)?' on':'')+'" onclick="tgD3(this,\''+eO(d3)+'\')">'+eH(d3)+'</span>';
       });
     });
@@ -495,9 +495,8 @@ function tgD2(el,v){
   if(d2f.has(v)){
     d2f.delete(v);el.classList.remove('on');
     var its=gci(curCat);var d2d3={};
-    its.forEach(function(it){var d3=it.dim3.trim().replace(/\n/g,'');if(!d2d3[it.dim2])d2d3[it.dim2]=new Set();d2d3[it.dim2].add(d3)});
-    if(d2d3[v])d2d3[v].forEach(function(d3){d3f.delete(d3)});
-  }else{d2f.add(v);el.classList.add('on')}
+      its.forEach(function(it){var d3=it.dim3.trim().replace(/\n/g,'');if(!d2d3[it.dim2])d2d3[it.dim2]=[];if(d2d3[it.dim2].indexOf(d3)<0)d2d3[it.dim2].push(d3)});
+      if(d2d3[v])d2d3[v].forEach(function(d3){d3f.delete(d3)});  }else{d2f.add(v);el.classList.add('on')}
   renderCat(curCat);
 }
 function tgD3(el,v){if(d3f.has(v)){d3f.delete(v);el.classList.remove('on')}else{d3f.add(v);el.classList.add('on')}renderItems()}
