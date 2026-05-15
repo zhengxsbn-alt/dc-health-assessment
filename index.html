@@ -132,6 +132,7 @@ textarea.fi2{min-height:60px;resize:vertical;font-family:inherit}
     <h1 id="hdrT">机房健康度评估</h1>
   </div>
   <div class="hdr-acts">
+    <button class="hdr-btn" onclick="clearAll()" style="margin-right:6px">🗑️ 清空</button>
     <button class="hdr-btn" onclick="exportXlsx()">📥 导出</button>
   </div>
 </div>
@@ -545,6 +546,17 @@ function swTab(t,el){
   window.scrollTo(0,0);
 }
 function goBack(){swTab('overview')}
+
+function clearAll(){
+  if(!confirm('确定要清空所有评估数据吗？\n此操作不可恢复，建议先导出备份！'))return;
+  D={info:{},items:{},photos:{}};
+  try{localStorage.removeItem(LSK)}catch(e){}
+  expC=new Set();d2f=new Set();d3f=new Set();
+  renderOv();renderInfo();
+  if(curCat)renderCat(curCat);
+  shSv();
+  alert('已清空所有评估数据');
+}
 
 function exportXlsx(){
   var wb=new ExcelJS.Workbook();
