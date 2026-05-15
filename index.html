@@ -560,7 +560,22 @@ function clearAll(){
 
 function exportXlsx(){
   var wb=new ExcelJS.Workbook();
-  // Sheet 1: 问题汇总
+  // Sheet 1: 机房信息
+  var ws0=wb.addWorksheet('机房信息');
+  var infoFields=[
+    {k:'dc_name',l:'机房名称'},{k:'dc_loc',l:'机房地址'},{k:'dc_area',l:'机房面积(㎡)'},
+    {k:'dc_tier',l:'机房等级'},{k:'dc_itpw',l:'IT总功率(kW)'},{k:'dc_rack',l:'机柜数量'},
+    {k:'dc_pue',l:'当前PUE'},{k:'dc_age',l:'投运年限'},{k:'dc_ct',l:'联系人'},
+    {k:'dc_ph',l:'联系电话'},{k:'dc_as',l:'评估人'},{k:'dc_dt',l:'评估日期'},{k:'dc_nt',l:'备注'}
+  ];
+  ws0.columns=[{header:'项目',width:18},{header:'内容',width:40}];
+  ws0.getRow(1).font={bold:true,size:11};
+  ws0.getRow(1).alignment={vertical:'middle',horizontal:'center'};
+  infoFields.forEach(function(f){
+    var row=ws0.addRow([f.l, D.info[f.k]||'']);
+    row.alignment={vertical:'middle',wrapText:true};
+  });
+  // Sheet 2: 问题汇总
   var ws1=wb.addWorksheet('问题汇总');
   var cols1=['序号','一级维度类别','问题or建议项描述','引用来源','风险or影响','等级分类','措施建议','处理措施','是否可以解决','评估状态','问题处理进展','预期完成时间','挂起或关闭时间'];
   ws1.columns=cols1.map(function(c){return{header:c,width:c==='序号'?6:c==='一级维度类别'||c==='引用来源'||c==='等级分类'?14:c==='措施建议'||c==='风险or影响'||c==='问题or建议项描述'?36:16}});
@@ -613,7 +628,8 @@ function exportXlsx(){
       }
     });
   });
-  if(seq1===1&&seq2===1){alert('暂无已填写的评估项，无法导出');return}
+  var hasInfo=Object.values(D.info||{}).some(function(v){return v&&String(v).trim()});
+  if(!hasInfo&&seq1===1&&seq2===1){alert('暂无已填写的数据，无法导出');return}
   wb.xlsx.writeBuffer().then(function(buf){
     var blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
     var a=document.createElement('a');
