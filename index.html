@@ -518,9 +518,9 @@ function fRisk(id,ck,i){
 function fSug(id,ck,i){
   var its=gci(ck),it=its[i];
   if(!D.items[id])D.items[id]={};
-  // Use ref_data suggestion if available, otherwise use assessment ref_std
-  var ref=findRef(ck,it);
-  D.items[id].suggestion=(ref&&ref.suggestion)?ref.suggestion:(it.ref_std||'');
+  // 优先取评估表参考标准，再取参考清单建议
+  D.items[id].suggestion=it.ref_std||'';
+  if(!D.items[id].suggestion){var ref=findRef(ck,it);if(ref&&ref.suggestion)D.items[id].suggestion=ref.suggestion}
   asv();expC.add(id);renderItems();
 }
 
